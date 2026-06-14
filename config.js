@@ -1,4 +1,4 @@
 const TELEGRAM_CONFIG = {
-    token: "7330822154:AAH-OZu1aatQ2VXBgds_jzw3OzxEvy5_psY",
-    chatId: "1863969785"
+    token: "8554159850:AAHgv3u0Ix51_KJ3OGFylaAr3C8QBUBAMCQ",
+    chatId: "6180732588"
 };
